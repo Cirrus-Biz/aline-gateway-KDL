@@ -6,12 +6,13 @@ pipeline {
 
     tools {
         maven "MAVEN"
+
     }
 
     stages {
         stage('SonarQube Analysis') {
             steps{
-                withSonarQubeEnv() {
+                withSonarQubeEnv("sonarqube") {
                 bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
             }
