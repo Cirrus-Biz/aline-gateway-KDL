@@ -13,7 +13,8 @@ pipeline {
         stage('SonarQube Analysis') {
             steps{
                 withSonarQubeEnv(installationName: "sonarqube") {
-                bat "${maven}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
+                    bat "./mvnw clean org.sonarsource.scanner.manven:sonar-maven-plugin:3.9.0.2155:sonar"
+                // bat "${maven}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
             }
 
