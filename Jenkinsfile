@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('SonarQube Analysis') {
             steps{
-                withSonarQubeEnv("sonarqube") {
+                withSonarQubeEnv(installationName: "sonarqube") {
                 bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
             }
