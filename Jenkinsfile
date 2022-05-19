@@ -11,8 +11,7 @@ pipeline {
     stages {
         stage('SonarQube Analysis') {
             steps{
-                def mvn = tool 'Default Maven';
-                withSonarQubeEnv() {
+                withSonarQubeEnv("sonarqube_cirrusbiz") {
                 bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
             }
