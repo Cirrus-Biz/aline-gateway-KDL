@@ -9,15 +9,15 @@ pipeline {
     }
 
     stages {
-        steps{
-            stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
+            steps{
                 def mvn = tool 'Default Maven';
                 withSonarQubeEnv() {
                 bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
-  }
-        }
+            }
 
+  }
 
 
         stage("Build MVN") {
