@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('SonarQube Analysis') {
             steps{
-                withSonarQubeEnv("sonarqube_cirrusbiz") {
+                withSonarQubeEnv() {
                 bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
             }
