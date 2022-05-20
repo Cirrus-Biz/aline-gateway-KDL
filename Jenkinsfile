@@ -16,7 +16,7 @@ pipeline {
             }
             steps{
                 withSonarQubeEnv(installationName: "sonarqube") {
-                bat "${mvn}/bin/mvn clean sonar:sonar"
+                bat "./mvnw clean org.sonarsource.scanner.maven:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
                 }
 
