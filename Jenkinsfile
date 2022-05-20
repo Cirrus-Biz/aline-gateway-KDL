@@ -16,7 +16,7 @@ pipeline {
             }
             steps{
                 withSonarQubeEnv(installationName: "sonarqube") {
-                bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=gateway-Sonarqube"
+                bat "${mvn}/bin/mvn clean sonar:sonar -Dsonar.projectKey=gateway-Sonarqube"
     }
                 }
 
