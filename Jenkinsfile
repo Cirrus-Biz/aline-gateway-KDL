@@ -16,11 +16,11 @@ pipeline {
             }
             steps{
                 withSonarQubeEnv(installationName: "sonarqube") {
-                bat "./mvnw clean org.sonarsource.scanner.maven:sonar -Dsonar.projectKey=Sonarqube-gateway"
+                bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
     }
                 }
 
-                // bat "${maven}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
+                // bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
         }
             
 
