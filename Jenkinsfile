@@ -8,6 +8,12 @@ pipeline {
         maven "MAVEN"
 
     }
+            
+        stage("Build MVN") {
+            steps {
+                bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+        }
 
     stages {
         stage('SonarQube Analysis') {
@@ -21,15 +27,6 @@ pipeline {
                 }
 
                 // bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
-        }
-            
-
-
-
-        stage("Build MVN") {
-            steps {
-                bat "mvn -Dmaven.test.failure.ignore=true clean package"
-            }
         }
 
 
