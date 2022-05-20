@@ -8,14 +8,14 @@ pipeline {
         maven "MAVEN"
 
     }
-            
+
+    stages {
         stage("Build MVN") {
             steps {
                 bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
         }
 
-    stages {
         stage('SonarQube Analysis') {
             environment{
                  def mvn = tool 'Default Maven';
@@ -23,12 +23,9 @@ pipeline {
             steps{
                 withSonarQubeEnv(installationName: "sonarqube") {
                 bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
-    }
                 }
-
-                // bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
+            }       
         }
-
 
         stage("Build Docker"){
             steps{
