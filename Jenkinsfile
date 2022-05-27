@@ -10,7 +10,7 @@ pipeline {
             steps{
                 script{
                     withSonarQubeEnv(installationName: "sonarqube") {
-                        bat "mvn clean verify sonar:sonar -Dsonar.projectKey=gateway-microservice-kdl"
+                        bat "mvn clean test sonar:sonar -Dsonar.projectKey=gateway-microservice-kdl"
                         }
                 }
 
