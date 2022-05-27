@@ -1,65 +1,63 @@
 pipeline {
-    environment {
-        DOCKERHUB_CREDENTIALS=credentials("Dockerhub")
-    }
     agent any
 
     tools {
         maven "MAVEN"
-
     }
 
     stages {
-        stage("Build MVN") {
-            steps {
-                bat "mvn -Dmaven.test.failure.ignore=true clean package"
-            }
-        }
-
         stage('SonarQube Analysis') {
-            environment{
-                 def mvn = tool 'MAVEN';
-            }
             steps{
-                withSonarQubeEnv(installationName: "sonarqube") {
-                bat "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Sonarqube-gateway"
+                script{
+                    withSonarQubeEnv(installationName: "sonarqube") {
+                        bat "mvn clean test sonar:sonar -Dsonar.projectKey=gateway-microservice-kdl"
+                        }
                 }
+
             }       
         }
 
-        stage("Build Docker"){
+        stage('Quality Gate Check'){
             steps{
-                bat "docker build -t laxwalrus/capstone-gateway:$BUILD_NUMBER ."
+                script{
+                    sleep(5)
+                        def qg = waitForQualityGate()
+                        if(qg.status != 'OK'){
+                            error "Pipeline aborted due to quality gate failure"
+                    }
+                    }
+                }
+                
+            }
+        
+        stage("Build w/MVN") {
+            steps {
+                bat "mvn clean package -Dskiptests"
+            }
+        }
+
+        stage("Build Image w/docker"){
+            steps{
+                bat "docker build -t $env.AWS_ECR_REGISTRY/gateway-microservice-kdl:$BUILD_NUMBER ."
 
             }            
         }
 
-
-        stage("login to docker"){
+        stage("Deploy to AWS"){
             steps{
-                bat "echo $DOCKERHUB_CREDENTIALS_PSW| docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
-            }
-        }
-
-        stage("Deploy Docker"){
-            steps{
-                bat "docker push laxwalrus/capstone-gateway:$BUILD_NUMBER"
+                script{
+                   docker.withRegistry("https://$env.AWS_ECR_REGISTRY", "ecr:$env.AWS_REGION:AWS"){
+                       docker.image("$env.AWS_ECR_REGISTRY/gateway-microservice-kdl:$BUILD_NUMBER").push()
+                   }
+                }
             }
         }
             
-
-
         stage("Cleaning"){
             steps{
-                bat "docker logout"
+                bat "docker system prune --all -f"
             }
         }
         
-        stage('Archive') {
-            steps {
-            archiveArtifacts artifacts: 'target/*.jar', followSymlinks: false
-            }
-
-        }
     }
-}
+    }
