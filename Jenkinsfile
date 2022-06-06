@@ -4,14 +4,17 @@ pipeline {
     tools {
         maven "MAVEN"
     }
+    environment{
+        COMMIT = ""
+        DATE = new Date().format('M-yy')
+    }
 
     stages {
         stage('SonarQube Analysis') {
             steps{
                 script{
                     withSonarQubeEnv(installationName: "sonarqube") {
-                        bat "mvn clean test"
-                        bat "mvn sonar:sonar -Dsonar.projectKey=gateway-microservice-kdl"
+                        bat "mvn clean test verify package sonar:sonar -Dsonar.projectKey=gateway-microservice-kdl"
                         }
                 }
 
@@ -39,7 +42,12 @@ pipeline {
 
         stage("Build Image w/docker"){
             steps{
-                bat "docker build -t $env.AWS_ECR_REGISTRY/gateway-microservice-kdl:$BUILD_NUMBER ."
+                script{
+                    COMMIT = "${GIT_COMMIT}"
+                    SLICE = COMMIT[1..7]                    
+                    bat "docker build -t $env.AWS_ECR_REGISTRY/gateway-microservice-kdl:${SLICE}.${BUILD_NUMBER}.${DATE} ."
+                }
+
 
             }            
         }
@@ -47,8 +55,10 @@ pipeline {
         stage("Deploy to AWS"){
             steps{
                 script{
+                    COMMIT = "${GIT_COMMIT}"
+                    SLICE = COMMIT[1..7]
                    docker.withRegistry("https://$env.AWS_ECR_REGISTRY", "ecr:$env.AWS_REGION:AWS"){
-                       docker.image("$env.AWS_ECR_REGISTRY/gateway-microservice-kdl:$BUILD_NUMBER").push()
+                       docker.image("$env.AWS_ECR_REGISTRY/gateway-microservice-kdl:${SLICE}.${BUILD_NUMBER}.${DATE}").push()
                    }
                 }
             }
