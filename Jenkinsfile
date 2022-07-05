@@ -9,6 +9,11 @@ pipeline {
     environment{
         COMMIT = ""
         DATE = new Date().format('M-yy')
+        DOCKER_USERNAME = credentials('Docker-username-KDL')
+        DOCKER_PASSWORD = credentials('Docker-Password-KDL')
+        githubtoken = credentials('Github-token-KDL')
+        AWS_ACCESS_KEY = credentials('KDL-SECRET-KEY')
+        AWS_SECRET_ACCESS_KEY = credentials('KDL-SECRET-KEY-2')
         THE_BUTLER_SAYS_SO=credentials('AWS-KDL')
     }
 
